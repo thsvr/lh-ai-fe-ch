@@ -61,6 +61,8 @@ export function BriefViewer({
         parts.push(
           <Tooltip key={`cit-${citation.id}`} content={tooltipContent} position="top">
             <span
+              id={`citation-${citation.id}`}
+              data-severity={severity}
               role="button"
               tabIndex={0}
               aria-pressed={isSelected}

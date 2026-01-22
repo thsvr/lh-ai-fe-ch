@@ -7,9 +7,16 @@ interface HeaderProps {
     warning: number;
     critical: number;
   };
+  onStatClick?: (severity: 'none' | 'warning' | 'critical') => void;
 }
 
-export function Header({ stats }: HeaderProps) {
+export function Header({ stats, onStatClick }: HeaderProps) {
+  const handleStatClick = (severity: 'none' | 'warning' | 'critical') => {
+    if (onStatClick) {
+      onStatClick(severity);
+    }
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-slate-800 border-b border-slate-700">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
@@ -22,23 +29,35 @@ export function Header({ stats }: HeaderProps) {
 
           {/* Stats */}
           <div className="flex items-center gap-6">
-            <Tooltip content="Valid citations" position="bottom">
-              <div className="flex items-center gap-2">
+            <Tooltip content="Valid citations - Click to jump" position="bottom">
+              <button
+                onClick={() => handleStatClick('none')}
+                className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+                aria-label={`${stats.valid} valid citations - click to navigate`}
+              >
                 <CheckCircle className="w-6 h-6 text-status-valid" />
                 <span className="body2 text-slate-300">{stats.valid}</span>
-              </div>
+              </button>
             </Tooltip>
-            <Tooltip content="Citations with warnings" position="bottom">
-              <div className="flex items-center gap-2">
+            <Tooltip content="Citations with warnings - Click to jump" position="bottom">
+              <button
+                onClick={() => handleStatClick('warning')}
+                className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+                aria-label={`${stats.warning} citations with warnings - click to navigate`}
+              >
                 <AlertTriangle className="w-6 h-6 text-status-warning" />
                 <span className="body2 text-slate-300">{stats.warning}</span>
-              </div>
+              </button>
             </Tooltip>
-            <Tooltip content="Critical issues" position="bottom">
-              <div className="flex items-center gap-2">
+            <Tooltip content="Critical issues - Click to jump" position="bottom">
+              <button
+                onClick={() => handleStatClick('critical')}
+                className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+                aria-label={`${stats.critical} critical issues - click to navigate`}
+              >
                 <XCircle className="w-6 h-6 text-status-critical" />
                 <span className="body2 text-slate-300">{stats.critical}</span>
-              </div>
+              </button>
             </Tooltip>
           </div>
         </div>

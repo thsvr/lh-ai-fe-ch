@@ -14,13 +14,11 @@ export function BriefPage() {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate loading state
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
   }, []);
 
-  // Keyboard navigation: Escape to close
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && (selectedCitation || isPanelOpen)) {
@@ -43,6 +41,34 @@ export function BriefPage() {
     setIsPanelOpen(false);
   };
 
+  const handleStatClick = (severity: 'none' | 'warning' | 'critical') => {
+    // Find first citation with matching severity
+    const firstCitation = document.querySelector(`[data-severity="${severity}"]`) as HTMLElement;
+    
+    if (firstCitation) {
+      firstCitation.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+      
+      const severityColors = {
+        none: 'rgb(34 197 94)',      
+        warning: 'rgb(245 158 11)',   
+        critical: 'rgb(239 68 68)',   
+      };
+      
+      // Add temporary highlight effect with severity color
+      const originalBoxShadow = firstCitation.style.boxShadow;
+      const highlightColor = severityColors[severity];
+      firstCitation.style.boxShadow = `0 0 0 4px ${highlightColor}, 0 0 0 6px white`;
+      firstCitation.style.transition = 'box-shadow 0.2s ease-out';
+      
+      setTimeout(() => {
+        firstCitation.style.boxShadow = originalBoxShadow;
+      }, 2000);
+    }
+  };
+
   // Calculate stats
   const stats = sampleBrief.verificationResults.reduce(
     (acc, result) => {
@@ -54,7 +80,6 @@ export function BriefPage() {
     { valid: 0, warning: 0, critical: 0 }
   );
 
-  // Loading skeleton
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50">
@@ -66,7 +91,7 @@ export function BriefPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <Header stats={stats} />
+      <Header stats={stats} onStatClick={handleStatClick} />
 
       {/* Main content */}
       <div className="max-w-7xl mx-auto lg:flex">
