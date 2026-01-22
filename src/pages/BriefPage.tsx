@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, AlertTriangle } from 'lucide-react';
 import { Header } from '@components/Header';
 import { BriefViewer } from '@components/BriefViewer';
 import { DetailPanel } from '@components/DetailPanel';
-import { ContentSkeleton } from '@designSystem';
+import { ContentSkeleton, ErrorState } from '@designSystem';
 import { sampleBrief } from '@data/sampleBrief';
 import { Citation, VerificationResult } from '@/types';
 
@@ -13,6 +13,7 @@ export function BriefPage() {
   const [selectedResult, setSelectedResult] = useState<VerificationResult | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 800);
@@ -102,6 +103,18 @@ export function BriefPage() {
             onCitationClick={handleCitationClick}
             selectedCitationId={selectedCitation?.id || null}
           />
+          
+          {/* Error Simulation Demo - At bottom of content */}
+          <div className="max-w-4xl mx-auto px-4 pb-8 lg:px-8">
+            <button
+              onClick={() => setHasError(true)}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors shadow-lg"
+              aria-label="Simulate citation error"
+            >
+              <AlertTriangle className="w-5 h-5" />
+              <span className="text-sm font-medium">Extra Demo: Click here to simulate a citation loading error</span>
+            </button>
+          </div>
         </main>
 
         {/* Desktop: Fixed sidebar */}
@@ -159,6 +172,17 @@ export function BriefPage() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Error State - Fixed at top right */}
+      {hasError && (
+        <div className="fixed top-24 right-4 max-w-md z-50 animate-slide-in">
+          <ErrorState
+            title="Citation Load Failed"
+            message="Unable to load verification data for this citation. This is a simulated error for demonstration purposes."
+            onRetry={() => setHasError(false)}
+          />
+        </div>
+      )}
     </div>
   );
 }
